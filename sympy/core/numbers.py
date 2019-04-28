@@ -1957,7 +1957,7 @@ class Integer(Rational):
         # be made into an int or whether an error should be raised.
         try:
             ival = int(i)
-        except TypeError:
+        except (TypeError, ValueError, OverflowError):
             raise TypeError(
                 "Argument of Integer should be of numeric type, got %s." % i)
         # We only work with well-behaved integer types. This converts, for
