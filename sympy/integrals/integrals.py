@@ -1110,6 +1110,8 @@ class Integral(AddWithLimits):
         from sympy.simplify.simplify import simplify
 
         expr = factor_terms(self)
+        if expr.is_zero:
+            return S.Zero
         kwargs = dict(ratio=ratio, measure=measure, rational=rational, inverse=inverse)
         if isinstance(expr, Integral):
             return expr.func(*[simplify(i, **kwargs) for i in expr.args])
