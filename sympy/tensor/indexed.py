@@ -438,9 +438,9 @@ class IndexedBase(Expr, NotIterable):
         assumptions, kw_args = _filter_assumptions(kw_args)
         if isinstance(label, string_types):
             label = Symbol(label)
+            IndexedBase._set_assumptions(label, assumptions)
         elif isinstance(label, Symbol):
             assumptions = label._merge(assumptions)
-            label = Symbol(label.name)
         elif isinstance(label, (MatrixBase, NDimArray)):
             return label
         elif isinstance(label, Iterable):
