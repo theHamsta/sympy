@@ -441,6 +441,7 @@ class IndexedBase(Expr, NotIterable):
             IndexedBase._set_assumptions(label, assumptions)
         elif isinstance(label, Symbol):
             assumptions = label._merge(assumptions)
+            label._assumptions = assumptions
         elif isinstance(label, (MatrixBase, NDimArray)):
             return label
         elif isinstance(label, Iterable):

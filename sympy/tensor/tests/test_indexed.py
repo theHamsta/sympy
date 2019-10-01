@@ -1,11 +1,12 @@
-from sympy.core import symbols, Symbol, Tuple, oo, Dummy
+# import test:
+from sympy import (
+    And, Array, Derivative, Function, GreaterThan, Idx, Indexed, IndexedBase,
+    KroneckerDelta, LessThan, Order, Piecewise, Range, S, StrictGreaterThan,
+    StrictLessThan, Subs, Sum, cos, exp, log, sin)
+from sympy.core import Dummy, Symbol, Tuple, oo, symbols
 from sympy.core.compatibility import iterable, range
 from sympy.tensor.indexed import IndexException
-from sympy.utilities.pytest import raises, XFAIL
-
-# import test:
-from sympy import IndexedBase, Idx, Indexed, S, sin, cos, exp, log, Sum, Piecewise, And, Order, LessThan, StrictGreaterThan, \
-    GreaterThan, StrictLessThan, Range, Array, Subs, Function, KroneckerDelta, Derivative
+from sympy.utilities.pytest import XFAIL, raises
 
 
 def test_Idx_construction():
@@ -233,6 +234,13 @@ def test_IndexedBase_assumptions_inheritance():
     assert I_explicit.label.is_integer
     assert I_inherit == I_explicit
 
+    I_inherit_and_explicit = IndexedBase(I, positive=True)
+
+    assert I_inherit_and_explicit.is_integer
+    assert I_inherit_and_explicit.is_positive
+    assert I_inherit_and_explicit.label.is_integer
+    assert I_inherit_and_explicit.label.is_positive
+
 
 def test_issue_17652():
     """Regression test issue #17652.
@@ -378,7 +386,8 @@ def test_differentiation():
     assert expr.diff(L[k, l]) == a*KroneckerDelta(i, k)*KroneckerDelta(j, l)*h[j]
     assert expr.diff(L[i, l]) == a*KroneckerDelta(j, l)*h[j]
 
-    assert Sum(expr, (j, -oo, oo)).diff(L[k, l]) == Sum(a * KroneckerDelta(i, k) * KroneckerDelta(j, l) * h[j], (j, -oo, oo))
+    assert Sum(expr, (j, -oo, oo)).diff(L[k, l]) == Sum(a *
+                                                        KroneckerDelta(i, k) * KroneckerDelta(j, l) * h[j], (j, -oo, oo))
     assert Sum(expr, (j, -oo, oo)).diff(L[k, l]).doit() == a * KroneckerDelta(i, k) * h[l]
 
     assert h[m].diff(h[m]) == 1
@@ -458,13 +467,13 @@ def test_complicated_derivative_with_Indexed():
     x, y = symbols("x,y", cls=IndexedBase)
     sigma = symbols("sigma")
     i, j, k = symbols("i,j,k")
-    m0,m1,m2,m3,m4,m5 = symbols("m0:6")
+    m0, m1, m2, m3, m4, m5 = symbols("m0:6")
     f = Function("f")
 
     expr = f((x[i] - y[i])**2/sigma)
     _xi_1 = symbols("xi_1", cls=Dummy)
     assert expr.diff(x[m0]).dummy_eq(
-        (x[i] - y[i])*KroneckerDelta(i, m0)*\
+        (x[i] - y[i])*KroneckerDelta(i, m0) *
         2*Subs(
             Derivative(f(_xi_1), _xi_1),
             (_xi_1,),
@@ -472,13 +481,13 @@ def test_complicated_derivative_with_Indexed():
         )/sigma
     )
     assert expr.diff(x[m0]).diff(x[m1]).dummy_eq(
-        2*KroneckerDelta(i, m0)*\
+        2*KroneckerDelta(i, m0) *
         KroneckerDelta(i, m1)*Subs(
             Derivative(f(_xi_1), _xi_1),
             (_xi_1,),
             ((x[i] - y[i])**2/sigma,)
-         )/sigma + \
-        4*(x[i] - y[i])**2*KroneckerDelta(i, m0)*KroneckerDelta(i, m1)*\
+        )/sigma +
+        4*(x[i] - y[i])**2*KroneckerDelta(i, m0)*KroneckerDelta(i, m1) *
         Subs(
             Derivative(f(_xi_1), _xi_1, _xi_1),
             (_xi_1,),
